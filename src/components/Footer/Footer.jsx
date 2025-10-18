@@ -164,7 +164,7 @@ const Footer = () => {
           </div>
 
           <div className={styles.madeWith}>
-            Conçu et développé avec ❤️ en React & Vite
+            Conçu et développé avec ❤️ par Ouendeno Saa Bernard
           </div>
         </div>
       </div>
