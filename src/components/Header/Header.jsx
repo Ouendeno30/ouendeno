@@ -5,12 +5,28 @@ import { personalInfo } from "../../data/data";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Détection de la taille d'écran
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 768); // 768px est une breakpoint courante pour mobile
+    };
+
+    // Vérifier au chargement
+    checkScreenSize();
+
+    // Écouter les changements de taille
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
   // Fonction pour détecter la section active au scroll
   useEffect(() => {
     const handleScroll = () => {
       const sections = ["home", "about", "skills", "projects", "contact"];
-      const scrollY = window.scrollY + 100; // Offset pour déclenchement anticipé
+      const scrollY = window.scrollY + 100;
 
       for (const section of sections) {
         const element = document.getElementById(section);
@@ -28,23 +44,19 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Fonction pour basculer le menu burger
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Fonction pour fermer le menu après clic sur un lien
   const closeMenu = () => {
     setIsMenuOpen(false);
   };
 
-  // Fonction pour gérer le clic sur un lien et mettre à jour la section active
   const handleNavClick = (sectionId) => {
     setActiveSection(sectionId);
     closeMenu();
   };
 
-  // Liens de navigation
   const navLinks = [
     { id: "home", name: "Accueil", href: "#home" },
     { id: "about", name: "À Propos", href: "#about" },
@@ -68,7 +80,7 @@ const Header = () => {
             </a>
           </div>
 
-          {/* Navigation Desktop */}
+          {/* Navigation Desktop - cachée sur mobile */}
           <ul className={styles.navLinks}>
             {navLinks.map((link) => (
               <li key={link.id}>
@@ -80,52 +92,54 @@ const Header = () => {
                   onClick={() => handleNavClick(link.id)}
                 >
                   {link.name}
-                  {/* Indicateur visuel pour l'item actif */}
                   <span className={styles.activeIndicator}></span>
                 </a>
               </li>
             ))}
           </ul>
 
-          {/* Bouton Menu Burger (Mobile) */}
-          <button
-            className={`${styles.menuButton} ${
-              isMenuOpen ? styles.active : ""
-            }`}
-            onClick={toggleMenu}
-            aria-label="Toggle menu"
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
+          {/* Bouton Menu Burger - affiché uniquement sur mobile */}
+          {isMobile && (
+            <button
+              className={`${styles.menuButton} ${
+                isMenuOpen ? styles.active : ""
+              }`}
+              onClick={toggleMenu}
+              aria-label="Toggle menu"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+          )}
 
-          {/* Menu Mobile */}
-          <div
-            className={`${styles.mobileMenu} ${
-              isMenuOpen ? styles.active : ""
-            }`}
-          >
-            <ul className={styles.mobileNavLinks}>
-              {navLinks.map((link) => (
-                <li key={link.id}>
-                  <a
-                    href={link.href}
-                    className={`${styles.mobileNavLink} ${
-                      activeSection === link.id ? styles.active : ""
-                    }`}
-                    onClick={() => handleNavClick(link.id)}
-                  >
-                    {link.name}
-                    {/* Indicateur pour mobile */}
-                    {activeSection === link.id && (
-                      <span className={styles.mobileActiveDot}>●</span>
-                    )}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Menu Mobile - affiché uniquement sur mobile */}
+          {isMobile && (
+            <div
+              className={`${styles.mobileMenu} ${
+                isMenuOpen ? styles.active : ""
+              }`}
+            >
+              <ul className={styles.mobileNavLinks}>
+                {navLinks.map((link) => (
+                  <li key={link.id}>
+                    <a
+                      href={link.href}
+                      className={`${styles.mobileNavLink} ${
+                        activeSection === link.id ? styles.active : ""
+                      }`}
+                      onClick={() => handleNavClick(link.id)}
+                    >
+                      {link.name}
+                      {activeSection === link.id && (
+                        <span className={styles.mobileActiveDot}>●</span>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </nav>
       </div>
     </header>
